@@ -1,6 +1,7 @@
 parser grammar ZuzuParser;
 
 options {
+    superClass=ZuzuParserBase;
     tokenVocab=ZuzuLexer;
 }
 
@@ -24,23 +25,25 @@ stmt : expr
      ;
 
 expr : 
-     expr ('++'|'--')
-     | ('++'|'--') lexpr
-     | ('-'|'~'|NOT) expr
-     | expr ASA expr
-     | expr ('*'|'/'|'mod') expr
-     | expr ('+'|'-') expr
-     | expr ('<<'|'>>'|'>>>') expr
-     | expr ('<'|'>'|'<='|'>='|ISA) expr
-     | expr ('=='|'!=') expr
-     | expr '&' expr
-     | expr BIT_XOR expr
-     | expr '|' expr
-     | expr AND expr
-     | expr OR expr
-     | expr ('='|'+='|'-='|'*='|'/='|'&='|'|='|'<<='|'>>='|'>>>=') expr
-     | curlyExpr
-     | '(' expr ')'
+     expr ('++'|'--') #postIncDecOp
+     | ('++' <assoc=right>|'--' <assoc=right>)  lexpr #preIncDecOp
+     | ('-' <assoc=right>|'~' <assoc=right>|NOT <assoc=right>) expr #prefixOp
+     | expr ASA expr #asaOp
+     | expr ('*'|'/'|'mod') expr #mulDivOp
+     | expr ('+'|'-') expr #plusMinusOp
+     | expr ('<<'|'>>'|'>>>') expr #shiftOp
+     | expr ('<'|'>'|'<='|'>='|ISA) expr #compareOp
+     | expr ('=='|'!=') expr #equalOp
+     | expr '&' expr #bitAndOp
+     | expr BIT_XOR expr #xorOp
+     | expr '|' expr #bitOrOp
+     | expr AND expr #andOp
+     | expr OR expr #orOp
+     | expr ('=' <assoc=right>|'+=' <assoc=right>|'-=' <assoc=right>|'*=' <assoc=right>|'/=' <assoc=right>
+     		|'&=' <assoc=right>|'|=' <assoc=right>|'<<=' <assoc=right>|'>>=' <assoc=right>|'>>>=' <assoc=right>
+     		) expr #assignOp
+     | curlyExpr #curlyOp
+     | '(' expr ')' #parenOp
      ;
 
 lexpr : expr '[' expr ']'
