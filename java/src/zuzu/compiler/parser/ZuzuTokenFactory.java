@@ -1,12 +1,13 @@
-package zuzu.parser;
+package zuzu.compiler.parser;
 
-import static zuzu.parser.ZuzuLexer.ID;
-import static zuzu.parser.ZuzuLexer.SUBSTITUTION;
+import static zuzu.compiler.parser.ZuzuLexer.ID;
+import static zuzu.compiler.parser.ZuzuLexer.SUBSTITUTION;
 
 import org.antlr.runtime.Token;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.TokenFactory;
 import org.antlr.v4.runtime.TokenSource;
+import org.antlr.v4.runtime.misc.Interval;
 import org.antlr.v4.runtime.misc.Pair;
 
 public final class ZuzuTokenFactory implements TokenFactory<ZuzuToken>
@@ -27,6 +28,10 @@ public final class ZuzuTokenFactory implements TokenFactory<ZuzuToken>
         int line,
         int charPositionInLine)
     {
+        if (text == null)
+        {
+            text = source.b.getText(new Interval(start, stop));
+        }
         switch (type)
         {
         case ID:
@@ -40,6 +45,7 @@ public final class ZuzuTokenFactory implements TokenFactory<ZuzuToken>
     @Override
     public ZuzuToken create(int type, String text)
     {
+        // FIXME: can't use null source
         return create(null, type, text, Token.DEFAULT_CHANNEL, 0, 0, 0, 0);
     }
 

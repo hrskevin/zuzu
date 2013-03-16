@@ -1,7 +1,7 @@
-package zuzu.parser;
+package zuzu.compiler.parser;
 
-import static zuzu.parser.ZuzuLexer.ID;
-import static zuzu.parser.ZuzuLexer.SUBSTITUTION;
+import static zuzu.compiler.parser.ZuzuLexer.ID;
+import static zuzu.compiler.parser.ZuzuLexer.SUBSTITUTION;
 
 import java.io.Serializable;
 import java.util.UUID;
@@ -9,6 +9,8 @@ import java.util.UUID;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.TokenSource;
 import org.antlr.v4.runtime.misc.Pair;
+
+import zuzu.lang.annotation.NotNull;
 
 public final class ZuzuIdentifier extends ZuzuToken implements Comparable<ZuzuIdentifier>
 {
@@ -32,7 +34,7 @@ public final class ZuzuIdentifier extends ZuzuToken implements Comparable<ZuzuId
 
     ZuzuIdentifier(Pair<TokenSource, CharStream> source,
         int type,
-        String text,
+        @NotNull String text,
         int channel,
         int start,
         int stop,
@@ -101,8 +103,7 @@ public final class ZuzuIdentifier extends ZuzuToken implements Comparable<ZuzuId
      * Object methods
      */
 
-    @Override
-    public boolean equals(Object that)
+    @Override public boolean equals(Object that)
     {
         return that instanceof ZuzuIdentifier && equalsWithHygiene((ZuzuIdentifier) that);
     }
@@ -112,8 +113,7 @@ public final class ZuzuIdentifier extends ZuzuToken implements Comparable<ZuzuId
         return equalsWithHygiene(that);
     }
 
-    @Override
-    public int hashCode()
+    @Override public int hashCode()
     {
         return _javaName.hashCode();
     }
@@ -122,8 +122,7 @@ public final class ZuzuIdentifier extends ZuzuToken implements Comparable<ZuzuId
      * Comparable methods
      */
 
-    @Override
-    public int compareTo(ZuzuIdentifier that)
+    @Override public int compareTo(ZuzuIdentifier that)
     {
         return Comparator.HYGIENIC.compare(this, that);
     }
@@ -219,14 +218,12 @@ public final class ZuzuIdentifier extends ZuzuToken implements Comparable<ZuzuId
             _id = UUID.randomUUID();
         }
 
-        @Override
-        public boolean equals(Object that)
+        @Override public boolean equals(Object that)
         {
             return _id.equals(that);
         }
 
-        @Override
-        public int hashCode()
+        @Override public int hashCode()
         {
             return _id.hashCode();
         }
@@ -236,8 +233,7 @@ public final class ZuzuIdentifier extends ZuzuToken implements Comparable<ZuzuId
          * 
          * @see #compare
          */
-        @Override
-        public int compareTo(HygieneTag that)
+        @Override public int compareTo(HygieneTag that)
         {
             return that == null ? 1 : this._id.compareTo(that._id);
         }
@@ -261,11 +257,12 @@ public final class ZuzuIdentifier extends ZuzuToken implements Comparable<ZuzuId
                 return tag1.compareTo(tag2);
             }
         }
-    };
+    }
 
     public static enum Comparator implements java.util.Comparator<ZuzuIdentifier>, Serializable
     {
-        HYGIENIC(true), NONHYGIENIC(false);
+            HYGIENIC(true),
+            NONHYGIENIC(false);
 
         private final boolean _isHygienic;
 
@@ -274,8 +271,7 @@ public final class ZuzuIdentifier extends ZuzuToken implements Comparable<ZuzuId
             _isHygienic = isHygienic;
         }
 
-        @Override
-        public int compare(ZuzuIdentifier id1, ZuzuIdentifier id2)
+        @Override public int compare(ZuzuIdentifier id1, ZuzuIdentifier id2)
         {
             int result = id1._javaName.compareTo(id2._javaName);
             if (result == 0 && _isHygienic)

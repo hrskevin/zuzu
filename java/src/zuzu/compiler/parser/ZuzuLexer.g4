@@ -1,20 +1,22 @@
 lexer grammar ZuzuLexer;
 
-options { superClass=ZuzuLexerBase; }
+options { 
+	tokenVocab=ZuzuTokens;
+	superClass=ZuzuLexerBase;
+    TokenLabelType=ZuzuToken;
+}
 
 //===================================================
 // Code mode (DEFAULT)
 //
 
 // Curly transitions
-CODE_ENTER : '{' -> pushMode(DEFAULT_MODE);
-CODE_EXIT : '}' -> popMode;
-TEXT_ENTER : TextPrefix ->pushMode(TEXT_MODE);
+LCURL : '{' -> pushMode(DEFAULT_MODE);
+RCURL : '}' -> popMode;
+LCURL_AT : '{@' ->pushMode(TEXT_HEAD_MODE);
 
-VERBATIM_CODE : '|{' .*? '}|' ;
-
-TAGGED_CODE_START : '|' Identifier '{'
-    { startTaggedToken(TAGGED_CODE_MODE); }
+TAGGED_CODE_START : '|' Identifier? '{'
+    { startTaggedToken(TAGGED_CODE_HEAD_MODE, false); }
     ;
 
 // Whitespace & comments
@@ -23,7 +25,7 @@ COMMENT : '//' .*? EndOfLine -> channel(HIDDEN);
 ML_COMMENT : '/*' .*? '*/' -> channel(HIDDEN);
 
 TAGGED_COMMENT_START : '/' Identifier '#'
-	{ startTaggedToken(TAGGED_COMMENT_MODE); } 
+	{ startTaggedToken(TAGGED_COMMENT_MODE, true); } 
 	;
 
 // Char & string literals
@@ -32,7 +34,7 @@ STRING : String ;
 VERBATIM_STRING : '/"' .*? '"/' ;
 
 TAGGED_STRING_START : '/' Identifier '"'
-	{ startTaggedToken(TAGGED_STRING_MODE); }
+	{ startTaggedToken(TAGGED_STRING_MODE, true); }
 	;
 
 // Numeric literals
@@ -91,7 +93,7 @@ DEC : '--' ;
 BIT_AND : '&' ;
 BIT_OR : '|' ;
 BIT_NOT : '~' ;
-BIT_XOR : 'xor' ;
+XOR : '^' ;
 LSHIFT : '<<' ;
 RSHIFT : '>>' ;
 URSHIFT : '>>>' ;
@@ -102,9 +104,9 @@ PLUS_ASSIGN : '+=' ;
 MINUS_ASSIGN : '-=' ;
 STAR_ASSIGN : '*=' ;
 SLASH_ASSIGN : '/=' ;
-AND_ASSIGN : '&=' ;
-OR_ASSIGN : '|=' ;
-XOR_ASSIGN : 'xor=' ;
+BIT_AND_ASSIGN : '&=' ;
+BIT_OR_ASSIGN : '|=' ;
+XOR_ASSIGN : '^=' ;
 LSHIFT_ASSIGN : '<<=' ;
 RSHIFT_ASSIGN : '>>=' ;
 URSHIFT_ASSIGN : '>>>=' ;
@@ -125,42 +127,26 @@ PRODUCE : '=>' ;
 // Keywords
 ZUZU : 'zuzu' ;
 IF : 'if' ;
-IF_NON_NULL : 'if-non-null' ;
 THEN : 'then' ;
 ELSE : 'else' ;
+CASE : 'case' ;
 DO : 'do' ;
-WHILE : 'while' ;
-FOR : 'for' ;
-TRY : 'try' ;
+NEXT : 'next' ;
 CATCH : 'catch' ;
 FINALLY : 'finally' ;
-BREAK : 'break' ;
-CONTINUE : 'continue' ;
-RETURN : 'return' ;
-THROW : 'throw' ;
-SWITCH : 'switch' ;
-TYPE_SWITCH : 'type-switch' ;
-SYNTAX_SWITCH : 'syntax-switch' ;
-CASE : 'case' ;
-WITH : 'with' ;
-VALUE : 'value' ;
+
+EXTENDS : 'extends' ;
+IMPLEMENTS : 'implements' ; 
 
 LET : 'let' ;
 DEF : 'def' ;
 
-FN : 'fn' ;
-PROC : 'proc' ;
-PROC_TYPE : 'proc-type' ;
-DEF_PROC : 'def-proc' ;
+DEF_FUNCTION : 'def-function' ;
 DEF_CLASS : 'def-class' ;
 METHOD : 'method' ;
 CONSTRUCTOR : 'constructor' ;
 FIELD : 'field' ;
 IMPORT : 'import' ;
-PACKAGE : 'package' ;
-
-TYPE_OF : 'type-of' ;
-STATIC_TYPE_OF : 'static-type-of' ;
 
 //
 // 
@@ -172,26 +158,34 @@ UNKNOWN_TOKEN : .+? ;
 
 //===================================================
 // Text mode
+mode TEXT_HEAD_MODE;
+
+TEXT_HEAD_ID : Identifier -> mode(TEXT_DOT_HEAD_MODE);
+
+mode TEXT_DOT_HEAD_MODE;
+
+TEXT_HEAD_DOT : '.' -> mode(TEXT_HEAD_MODE);
+
+TEXT_HEAD_END : . -> more, mode(TEXT_MODE);
+
 mode TEXT_MODE;
 
-TEXT_REENTER : TextPrefix ->pushMode(TEXT_MODE);
-CODE_REENTER : '{' -> pushMode(DEFAULT_MODE);
+LCURL_AT2 : '{@' ->pushMode(TEXT_HEAD_MODE);
+LCURL2 : '{' -> pushMode(DEFAULT_MODE);
 
 TEXT_COMMENT : '||' .*? EndOfLine -> channel(HIDDEN);
 TEXT_ML_COMMENT : '|*' .*? '*|' -> channel(HIDDEN);
 TEXT_TAGGED_COMMENT_START : '|' Identifier '#'
-	{ startTaggedToken(TAGGED_COMMENT_MODE); }
+	{ startTaggedToken(TAGGED_COMMENT_MODE, true); }
 	;
 
-TEXT_VERBATIM_CODE : '|{' .*? '}|' ;
-
-TEXT_TAGGED_CODE_START : '|' Identifier '{'
-                    { startTaggedToken(TAGGED_CODE_MODE); }
-                  ;
+TEXT_TAGGED_CODE_START : '|' Identifier? '{'
+    { startTaggedToken(TAGGED_CODE_HEAD_MODE, false); }
+    ;
 
 TEXT_FRAGMENT : ('\\' [{}] | ~[{}])+ ;
 
-TEXT_EXIT : '}' -> popMode;
+TEXT_RCURL : '}' -> popMode;
 
 //==================================================== 
 mode TAGGED_COMMENT_MODE;
@@ -210,9 +204,24 @@ TAGGED_STRING : .*? '"' Identifier '/'
                     ;
                     
 //==================================================== 
+mode TAGGED_CODE_HEAD_MODE;
+
+TAGGED_CODE_HEAD_ID : Identifier -> mode(TAGGED_CODE_DOT_HEAD_MODE);
+
+mode TAGGED_CODE_DOT_HEAD_MODE;
+
+TAGGED_CODE_HEAD_DOT : '.' -> mode(TAGGED_CODE_HEAD_MODE);
+
+TAGGED_CODE_HEAD_END : . -> more, mode(TAGGED_CODE_MODE) ;
+
 mode TAGGED_CODE_MODE;
 
-TAGGED_CODE : .*? '}' Identifier '|'
+// It would be more elegant to have separate tokens for the actual body
+// and the }<tag>|, but I think that would require producing more
+// than one token which is not entirely trivial and could slow down
+// the parser,so this may not be worthwhile.
+
+TAGGED_CODE : .*? '}' Identifier? '|'
                      { isEndTag() }?
                     -> popMode
                     ;
@@ -243,13 +252,10 @@ fragment IdStart : '_' | Letter ;
 fragment IdMiddle : IdStart | Digit | '-' Lowercase ;
 fragment IdEnd : IdStart | Digit | '?';
 fragment Identifier : IdStart IdMiddle* IdEnd?;
-fragment QualifiedIdentifier : Identifier ('.' Identifier)* ;
+//fragment QualifiedIdentifier : Identifier ('.' Identifier)* ;
 
 fragment UnicodeEscape : '\\u' Hex Hex Hex Hex ;
 fragment SpecialEscape : '\\' [{}"'|\\ ] ;
 fragment Escape : UnicodeEscape | '\\' [trn] | SpecialEscape ;
 
 fragment String : '"' (Escape | ~'"')* '"' ;
-
-fragment TextPrefix : '{@' QualifiedIdentifier ;
-
