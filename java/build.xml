@@ -30,12 +30,16 @@
             </fileset>
         </copy>
     </target>
-    <target name="clean">
+    <target depends="cleanAntlr" name="clean">
         <delete dir="bin"/>
-    	<delete file="src/zuzu/parser/ZuzuLexer.java"/>
-    	<delete file="src/zuzu/parser/ZuzuParser.java"/>
-    	<delete file="src/zuzu/parser/ZuzuParserListener.java"/>
-        <delete file="src/zuzu/parser/ZuzuParserVisitor.java"/>
+    </target>
+	<target name="cleanAntlr">
+    	<delete file="src/zuzu/compiler/parser/ZuzuLexer.java"/>
+    	<delete file="src/zuzu/compiler/parser/ZuzuParser.java"/>
+    	<delete file="src/zuzu/compiler/parser/ZuzuParserListener.java"/>
+        <delete file="src/zuzu/compiler/parser/ZuzuParserVisitor.java"/>
+		<delete file="src/zuzu/compiler/parser/ZuzuParser.tokens"/>
+		<delete file="src/zuzu/compiler/parser/ZuzuLexer.tokens"/>
     </target>
     <target depends="clean" name="cleanall"/>
     <target depends="build-subprojects,build-project" name="build"/>
