@@ -122,6 +122,7 @@ RPAREN : ')' ;
 LSQUARE : '[' ;
 RSQUARE : ']' ;
 COLON : ':' ;
+DEFINE : ':=';
 PRODUCE : '=>' ;
 
 // Keywords
@@ -160,32 +161,32 @@ UNKNOWN_TOKEN : .+? ;
 // Text mode
 mode TEXT_HEAD_MODE;
 
-TEXT_HEAD_ID : Identifier -> mode(TEXT_DOT_HEAD_MODE);
+TEXT_HEAD_ID : Identifier -> type(ID), mode(TEXT_DOT_HEAD_MODE);
 
 mode TEXT_DOT_HEAD_MODE;
 
-TEXT_HEAD_DOT : '.' -> mode(TEXT_HEAD_MODE);
+TEXT_HEAD_DOT : '.' -> type(DOT), mode(TEXT_HEAD_MODE);
 
 TEXT_HEAD_END : . -> more, mode(TEXT_MODE);
 
 mode TEXT_MODE;
 
-LCURL_AT2 : '{@' ->pushMode(TEXT_HEAD_MODE);
-LCURL2 : '{' -> pushMode(DEFAULT_MODE);
+LCURL_AT2 : '{@' -> type(LCURL_AT), pushMode(TEXT_HEAD_MODE);
+LCURL2 : '{' -> type(LCURL), pushMode(DEFAULT_MODE);
 
-TEXT_COMMENT : '||' .*? EndOfLine -> channel(HIDDEN);
-TEXT_ML_COMMENT : '|*' .*? '*|' -> channel(HIDDEN);
+TEXT_COMMENT : '||' .*? EndOfLine -> type(COMMENT), channel(HIDDEN);
+TEXT_ML_COMMENT : '|*' .*? '*|' -> type(ML_COMMENT), channel(HIDDEN);
 TEXT_TAGGED_COMMENT_START : '|' Identifier '#'
 	{ startTaggedToken(TAGGED_COMMENT_MODE, true); }
 	;
 
 TEXT_TAGGED_CODE_START : '|' Identifier? '{'
-    { startTaggedToken(TAGGED_CODE_HEAD_MODE, false); }
+    { _type = TAGGED_CODE_START; startTaggedToken(TAGGED_CODE_HEAD_MODE, false); }
     ;
 
 TEXT_FRAGMENT : ('\\' [{}] | ~[{}])+ ;
 
-TEXT_RCURL : '}' -> popMode;
+TEXT_RCURL : '}' -> type(RCURL), popMode;
 
 //==================================================== 
 mode TAGGED_COMMENT_MODE;
@@ -206,11 +207,11 @@ TAGGED_STRING : .*? '"' Identifier '/'
 //==================================================== 
 mode TAGGED_CODE_HEAD_MODE;
 
-TAGGED_CODE_HEAD_ID : Identifier -> mode(TAGGED_CODE_DOT_HEAD_MODE);
+TAGGED_CODE_HEAD_ID : Identifier -> type(ID), mode(TAGGED_CODE_DOT_HEAD_MODE);
 
 mode TAGGED_CODE_DOT_HEAD_MODE;
 
-TAGGED_CODE_HEAD_DOT : '.' -> mode(TAGGED_CODE_HEAD_MODE);
+TAGGED_CODE_HEAD_DOT : '.' -> type(DOT), mode(TAGGED_CODE_HEAD_MODE);
 
 TAGGED_CODE_HEAD_END : . -> more, mode(TAGGED_CODE_MODE) ;
 

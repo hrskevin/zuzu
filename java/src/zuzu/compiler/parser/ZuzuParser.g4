@@ -57,7 +57,18 @@ taggedCodeExpr : TAGGED_CODE_START
                  head=qualifiedId
                  body=TAGGED_CODE
                ;
-                   
+       
+//
+// Statements
+//
+
+stmt : name=ID ':=' value=expr #inferredVarDecl
+     | name=ID ':' type=typeExpr ('=' value=expr)? #varDecl
+     ;
+  
+typeExpr : qualifiedId
+         | codeExpr
+         ;
 //
 // Expressions
 //
@@ -152,10 +163,6 @@ qualifiedId : id ('.' id)* ;
 callArgs : (expr (',' expr)*) ;
 
 bindingExpr : id (':' typeExpr)? ;
-
-typeExpr : qualifiedId
-         | curlyExpr
-         ;
 
 booleanLiteral : TRUE | FALSE ;
 

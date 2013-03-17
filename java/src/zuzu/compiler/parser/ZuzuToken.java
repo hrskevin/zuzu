@@ -27,7 +27,7 @@ public class ZuzuToken extends CommonToken
         int line,
         int charPositionInLine)
     {
-        super(source, canonicalType(type), channel, start, stop);
+        super(source, type, channel, start, stop);
         this.text = text;
         this.line = line;
         this.charPositionInLine = charPositionInLine;
@@ -35,37 +35,8 @@ public class ZuzuToken extends CommonToken
 
     ZuzuToken(ZuzuToken token)
     {
-        this(token.source, canonicalType(token.type), token.text, token.channel, token.start, token.stop, token.line,
+        this(token.source, token.type, token.text, token.channel, token.start, token.stop, token.line,
             token.charPositionInLine);
-    }
-
-    private static int canonicalType(int type)
-    {
-        switch (type)
-        {
-        case LCURL2:
-            return LCURL;
-        case LCURL_AT2:
-            return LCURL_AT;
-        case TAGGED_CODE_HEAD_DOT:
-            return DOT;
-        case TAGGED_CODE_HEAD_ID:
-            return ID;
-        case TEXT_COMMENT:
-            return COMMENT;
-        case TEXT_ML_COMMENT:
-            return ML_COMMENT;
-        case TEXT_HEAD_DOT:
-            return DOT;
-        case TEXT_HEAD_ID:
-            return ID;
-        case TEXT_RCURL:
-            return RCURL;
-        case TEXT_TAGGED_CODE_START:
-            return TAGGED_CODE_START;
-        default:
-            return type;
-        }
     }
 
     /*--------------------
