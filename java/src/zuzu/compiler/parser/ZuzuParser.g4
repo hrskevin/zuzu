@@ -62,8 +62,10 @@ taggedCodeExpr : TAGGED_CODE_START
 // Statements
 //
 
+// NOTE: ZuzuInterpreterVisitor.visitStmt depends on this order
 stmt : name=ID ':=' value=expr #inferredVarDecl
      | name=ID ':' type=typeExpr ('=' value=expr)? #varDecl
+     | expr #exprStmt
      ;
   
 typeExpr : qualifiedId
@@ -112,7 +114,7 @@ expr : left=expr '.' name=id #dotExpr
      | id #idExpr
      ;
 
-exprs : expr*? ;
+exprs : exprList+=expr*? ;
 
 //
 // Top level syntax
@@ -164,25 +166,23 @@ callArgs : (expr (',' expr)*) ;
 
 bindingExpr : id (':' typeExpr)? ;
 
-booleanLiteral : TRUE | FALSE ;
+booleanLiteral : token=TRUE | token=FALSE ;
 
-integerLiteral : DECIMAL_INTEGER | HEX_INTEGER ;
+integerLiteral : token=DECIMAL_INTEGER | token=HEX_INTEGER ;
 
-stringLiteral : STRING
-              | VERBATIM_STRING
-              | TAGGED_STRING
+stringLiteral : token=STRING | token=VERBATIM_STRING | token=TAGGED_STRING
               ;
 
-floatLiteral : FIXED_FLOAT
-             | SCIENTIFIC_FLOAT
+floatLiteral : token=FIXED_FLOAT | token=SCIENTIFIC_FLOAT
              ;
 
-literal : NULL
-        | booleanLiteral
+// NOTE: ZuzuInterpreterVisitor.visitLiteral depends on this exact ordering.
+literal : token=NULL
+        | token=CHAR
+        | booleanLiteral 
         | integerLiteral
         | floatLiteral
         | stringLiteral
-        | CHAR
         ;
 
 //
