@@ -77,8 +77,10 @@ LT : '<' ;
 GT : '>' ;
 LE : '<=' ;
 GE : '>=' ;
-EQ : '==' ;
-NEQ : '!=' ;
+EQUALS : '==' ;
+NOTEQUALS : '!=' ;
+SAME : '===' ;
+NOTSAME : '!==' ;
 
 // Arithmetic
 PLUS : '+' ;

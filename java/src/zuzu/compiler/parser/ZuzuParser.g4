@@ -62,12 +62,12 @@ taggedCodeExpr : TAGGED_CODE_START
 // Statements
 //
 
-// NOTE: ZuzuInterpreterVisitor.visitStmt depends on this order
-stmt : name=ID ':=' value=expr #inferredVarDecl
-     | name=ID ':' type=typeExpr ('=' value=expr)? #varDecl
-     | expr #exprStmt
-     ;
-  
+
+stmt : name=ID ':=' value=expr #inferredVarDec
+	    | name=ID ':' type=typeExpr ('=' value=expr)? #varDecl
+        | expr #exprStmt
+        ;
+
 typeExpr : qualifiedId
          | codeExpr
          ;
@@ -77,25 +77,25 @@ typeExpr : qualifiedId
 
 expr : left=expr '.' name=id #dotExpr
      | left=expr '[' args=callArgs ']' #bracketExpr
-     | left=expr (operator='++'|operator='--') #postfixOp
+     | left=expr (operator='++'|operator='--') #postincOp
      | (operator='++' <assoc=right>
        |operator='--' <assoc=right>)
-       right=expr #prefixOp
+       right=expr #preincOp
      | (operator='-' <assoc=right>
        |operator='~'<assoc=right>
        |operator='not'<assoc=right>)
        right=expr #prefixOp
-     | left=expr operator='asa' right=expr #binaryOp
-     | left=expr (operator='*'|operator='/'|operator='mod') right=expr #binaryOp
-     | left=expr (operator='+'|operator='-') right=expr #binaryOp
-     | left=expr (operator='<<'|operator='>>'|operator='>>>') right=expr #binaryOp
-     | left=expr (operator='<'|operator='>'|operator='<='|operator='>='|ISA) right=expr #binaryOp
-     | left=expr (operator='=='|operator='!=') right=expr #binaryOp
-     | left=expr operator='&' right=expr #binaryOp
-     | left=expr operator='^' right=expr #binaryOp
-     | left=expr operator='|' right=expr #binaryOp
-     | left=expr operator='and' right=expr #binaryOp
-     | left=expr operator='or' right=expr #binaryOp
+     | left=expr operator='asa' right=expr #castOp
+     | left=expr (operator='*'|operator='/'|operator='mod') right=expr #mulOp
+     | left=expr (operator='+'|operator='-') right=expr #addOp
+     | left=expr (operator='<<'|operator='>>'|operator='>>>') right=expr #shiftOp
+     | left=expr (operator='<'|operator='>'|operator='<='|operator='>='|ISA) right=expr #compareOp
+     | left=expr (operator='==='|operator='!=='|operator='=='|operator='!=') right=expr #equalOp
+     | left=expr operator='&' right=expr #bitandOp
+     | left=expr operator='^' right=expr #xorOp
+     | left=expr operator='|' right=expr #bitorOp
+     | left=expr operator='and' right=expr #andOp
+     | left=expr operator='or' right=expr #orOp
      | left=expr (operator='=' <assoc=right>
             |operator='+=' <assoc=right>
             |operator='-=' <assoc=right>
@@ -107,7 +107,7 @@ expr : left=expr '.' name=id #dotExpr
             |operator='<<=' <assoc=right>
             |operator='>>=' <assoc=right>
             |operator='>>>=' <assoc=right>)
-        right=expr #binaryOp
+        right=expr #assignOp
      | curlyExpr #curlyOp
      | '(' expr ')' #parenExpr
      | literal #literalExpr

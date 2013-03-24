@@ -118,13 +118,29 @@ public final class ZuzuIdentifier extends ZuzuToken implements Comparable<ZuzuId
         return _javaName.hashCode();
     }
 
-    /*
+    /*---------------------
      * Comparable methods
      */
 
     @Override public int compareTo(ZuzuIdentifier that)
     {
         return Comparator.HYGIENIC.compare(this, that);
+    }
+
+    /*--------------------
+     * ZuzuToken methods
+     */
+
+    @Override
+    public String identifierName()
+    {
+        return getName();
+    }
+
+    @Override
+    public final boolean isIdentifier()
+    {
+        return true;
     }
 
     /*------------------------

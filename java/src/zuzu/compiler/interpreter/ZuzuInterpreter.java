@@ -22,7 +22,7 @@ public class ZuzuInterpreter
 
     public Object interpretStmt(StmtContext ctxt)
     {
-        return _visitor.visitStmt(ctxt);
+        return ctxt.accept(_visitor).node();
     }
 
     public static void main(String[] args)
@@ -40,15 +40,33 @@ public class ZuzuInterpreter
                 System.out.print(prompt);
                 String str = reader.readLine();
 
+                if (str.equals("{exit}"))
+                {
+                    break;
+                }
+
+                if (str.isEmpty())
+                {
+                    continue;
+                }
+
+                // TODO: support multi-line statements
                 lexer.setInputStream(new ANTLRInputStream(str));
                 lexer.setLine(reader.getLineNumber());
 
                 CommonTokenStream tokenStream = new CommonTokenStream(lexer);
                 parser.setTokenStream(tokenStream);
 
-                ZuzuParser.StmtContext stmt = parser.stmt();
-                Object result = interpreter.interpretStmt(stmt);
-                System.out.format("%s\n", result);
+                try
+                {
+                    ZuzuParser.StmtContext stmt = parser.stmt();
+                    Object result = interpreter.interpretStmt(stmt);
+                    System.out.format("%s\n", result);
+                }
+                catch (Exception ex)
+                {
+                    System.out.format("Caught %s\n", ex);
+                }
             }
         }
         catch (IOException ex)

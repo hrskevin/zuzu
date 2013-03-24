@@ -1,107 +1,162 @@
 package zuzu.compiler.interpreter;
 
-import zuzu.compiler.parser.ZuzuParser.BooleanLiteralContext;
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.TerminalNode;
+
+import zuzu.compiler.ir.ConstantOperand;
+import zuzu.compiler.ir.Operand;
+import zuzu.compiler.parser.ZuzuParser;
+import zuzu.compiler.parser.ZuzuParser.AndOpContext;
+import zuzu.compiler.parser.ZuzuParser.EqualOpContext;
 import zuzu.compiler.parser.ZuzuParser.ExprContext;
-import zuzu.compiler.parser.ZuzuParser.ExprStmtContext;
-import zuzu.compiler.parser.ZuzuParser.FloatLiteralContext;
-import zuzu.compiler.parser.ZuzuParser.InferredVarDeclContext;
-import zuzu.compiler.parser.ZuzuParser.IntegerLiteralContext;
-import zuzu.compiler.parser.ZuzuParser.LiteralContext;
-import zuzu.compiler.parser.ZuzuParser.LiteralExprContext;
-import zuzu.compiler.parser.ZuzuParser.StmtContext;
-import zuzu.compiler.parser.ZuzuParser.StringLiteralContext;
-import zuzu.compiler.parser.ZuzuParser.VarDeclContext;
+import zuzu.compiler.parser.ZuzuParser.OrOpContext;
+import zuzu.compiler.parser.ZuzuParser.PrefixOpContext;
 import zuzu.compiler.parser.ZuzuParserBaseVisitor;
+import zuzu.compiler.parser.ZuzuToken;
+import zuzu.lang.type.Type;
+import zuzu.lang.type.TypeReference;
+import zuzu.lang.type.Types;
 
-final class ZuzuInterpreterVisitor extends ZuzuParserBaseVisitor<Object>
+// TODO: instead of evaluating values directly, instead compile to BasicBlocks of Nodes
+// and then interpret those. Otherwise, once we start implementing macros/compiler syntaxes,
+// the interpreter would have to reparse/expand syntax on every loop iteration. This will also
+// be the same or similar to what we will need for real compilation.
+
+@SuppressWarnings("boxing")
+final class ZuzuInterpreterVisitor extends ZuzuParserBaseVisitor<Operand>
 {
+    // TODO: add state for global environment, local symbol table and DAG of basic blocks.
+
     @Override
-    public Object visitBooleanLiteral(BooleanLiteralContext ctx)
+    protected Operand aggregateResult(Operand aggregate, Operand nextResult)
     {
-        return ctx.token.literalValue();
+        return (nextResult != null) ? nextResult : aggregate;
     }
 
     @Override
-    public Object visitExprStmt(ExprStmtContext ctx)
+    public Operand visitAndOp(AndOpContext ctx)
     {
-        return visitExpr(ctx.expr());
-    }
-
-    @Override
-    public Object visitFloatLiteral(FloatLiteralContext ctx)
-    {
-        return ctx.token.literalValue();
-    }
-
-    @Override
-    public Object visitIntegerLiteral(IntegerLiteralContext ctx)
-    {
-        return ctx.token.literalValue();
-    }
-
-    @Override
-    public Object visitLiteral(LiteralContext ctxt)
-    {
-        switch (ctxt.altNum)
+        Operand left = interpretExpr(Types.BOOL, ctx.left);
+        if (!Boolean.class.cast(left.node()))
         {
-        case 1: // NULL
-        case 2: // CHAR
-            return ctxt.token.literalValue();
-        case 3: // boolean
-            return visitBooleanLiteral(ctxt.booleanLiteral());
-        case 4: // integer
-            return visitIntegerLiteral(ctxt.integerLiteral());
-        case 5: // float
-            return visitFloatLiteral(ctxt.floatLiteral());
-        case 6: // string
-            return visitStringLiteral(ctxt.stringLiteral());
+            return left;
         }
-        return null; // should never happen
+        Operand right = interpretExpr(Types.BOOL, ctx.right);
+        if (right.isConstant() == left.isConstant())
+        {
+            return right;
+        }
+
+        return make(Types.BOOL, right.node(), right.isConstant() && left.isConstant());
     }
 
     @Override
-    public Object visitLiteralExpr(LiteralExprContext ctxt)
+    public Operand visitEqualOp(EqualOpContext ctx)
     {
-        return visitLiteral(ctxt.literal());
+        Operand left = ctx.left.accept(this);
+        Operand right = ctx.right.accept(this);
+        boolean isConstant = left.isConstant() && right.isConstant();
+
+        switch (ctx.operator.getType())
+        {
+        case ZuzuParser.EQUALS:
+            return make(Types.BOOL, left.node().equals(right.node()), isConstant);
+        case ZuzuParser.NOTEQUALS:
+            return make(Types.BOOL, !left.node().equals(right.node()), isConstant);
+        case ZuzuParser.SAME:
+            return make(Types.BOOL, left.node() == right.node(), isConstant);
+        case ZuzuParser.NOTSAME:
+            return make(Types.BOOL, left.node() != right.node(), isConstant);
+        default:
+            throw unimplemented(ctx.operator.getText(), ctx);
+        }
     }
 
     @Override
-    public Object visitStringLiteral(StringLiteralContext ctx)
+    public Operand visitOrOp(OrOpContext ctx)
     {
-        return ctx.token.literalValue();
+        Operand left = interpretExpr(Types.BOOL, ctx.left);
+        if (Boolean.class.cast(left.node()))
+        {
+            return left;
+        }
+        Operand right = interpretExpr(Types.BOOL, ctx.right);
+        if (right.isConstant() == left.isConstant())
+        {
+            return right;
+        }
+
+        return make(Types.BOOL, right.node(), right.isConstant() && left.isConstant());
     }
 
-    // -------------
-    // New methods
-    //
-
-    public Object visitExpr(ExprContext ctxt)
+    @Override
+    public Operand visitPrefixOp(PrefixOpContext ctx)
     {
-        // TODO: use switch(ctxt.altNum) when order is considered stable
-
-        if (ctxt instanceof LiteralExprContext)
+        switch (ctx.operator.getType())
         {
-            return visitLiteralExpr((LiteralExprContext) ctxt);
+        case ZuzuParser.NOT:
+        {
+            Operand operand = interpretExpr(Types.BOOL, ctx.right);
+            return make(Types.BOOL, !Boolean.class.cast(operand.node()), operand.isConstant());
         }
-        // if (ctxt instanceof IdExprContext)
-        // {
-        // return visitIdExpr((IdExprContext) ctxt);
-        // }
+        case ZuzuParser.MINUS:
+        {
+            Operand operand = ctx.right.accept(this);
+        }
 
-        throw new Error("Unsupported");
+        case ZuzuParser.BIT_NOT:
+        default:
+            throw unimplemented(ctx.operator.getText(), ctx);
+        }
     }
 
-    public Object visitStmt(StmtContext ctx)
+    @Override
+    public Operand visitTerminal(TerminalNode node)
     {
-        switch (ctx.altNum)
+        Operand result = defaultResult();
+        ZuzuToken token = (ZuzuToken) node.getSymbol();
+        if (token.isLiteral())
         {
-        case 1:
-            return visitInferredVarDecl((InferredVarDeclContext) ctx);
-        case 2:
-            return visitVarDecl((VarDeclContext) ctx);
-        case 3:
-            return visitExprStmt((ExprStmtContext) ctx);
+            result = make(token.literalType(), token.literalValue(), true);
         }
-        return null; // should never happen
+        return result;
+    }
+
+    /*------------------
+     * Private methods
+     */
+
+    private Operand interpretExpr(TypeReference toTypeRef, ExprContext ctx)
+    {
+        return cast(toTypeRef, ctx.accept(this), ctx);
+    }
+
+    private Operand cast(TypeReference toTypeRef, Operand operand, ParserRuleContext ast)
+    {
+        Type toType = toTypeRef.getType();
+        Type fromType = operand.type();
+        
+        if (fromType.equals(toType))
+        {
+            return operand;
+        }
+        
+        if (fromType.isSubtypeOf(toType))
+        {
+            return make(toType, operand.node(), operand.isConstant());
+        }
+
+        // TODO: better error behavior if cast fails
+        return make(toType, toType.getJavaClass().cast(operand.node()), operand.isConstant());
+    }
+    
+    private Operand make(TypeReference type, Object value, boolean isConstant)
+    {
+        return isConstant ? new ConstantOperand(type, value) : new Operand(type, value);
+    }
+
+    private RuntimeException unimplemented(String syntax, ParserRuleContext ctx)
+    {
+        return new RuntimeException(String.format("Unimplemented syntax '%s'.", syntax));
     }
 }
