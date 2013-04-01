@@ -122,6 +122,14 @@ final class ZuzuInterpreterVisitor extends ZuzuParserBaseVisitor<Operand>
         return result;
     }
 
+    /*-----------------
+     * Package methods
+     */
+
+    // Operand compileIf(Operand condition, Operand trueBranch, Operand falseBranch)
+    // {
+    // }
+
     /*------------------
      * Private methods
      */
