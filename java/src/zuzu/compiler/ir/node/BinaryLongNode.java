@@ -4,10 +4,10 @@ import zuzu.compiler.ir.Node;
 
 public abstract class BinaryLongNode<InputNode extends Node> extends LongNode
 {
-    private final InputNode _input0;
-    private final InputNode _input1;
+    protected final InputNode _input0;
+    protected final InputNode _input1;
 
-    BinaryLongNode(InputNode input0, InputNode input1)
+    protected BinaryLongNode(InputNode input0, InputNode input1)
     {
         _input0 = input0;
         _input1 = input1;

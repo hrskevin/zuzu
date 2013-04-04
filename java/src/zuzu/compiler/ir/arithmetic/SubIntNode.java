@@ -23,4 +23,10 @@ public class SubIntNode extends BinaryIntNode<IntNode>
     {
         return newConstant(_input0.constantIntValue() - _input1.constantIntValue());
     }
+
+    // TODO: simplification
+    // x - x => 0
+    // x - 0 => x
+    // 0 - x => -x
+    // n*x - x => (n-1) * x
 }

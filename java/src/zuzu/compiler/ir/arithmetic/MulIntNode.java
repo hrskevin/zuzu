@@ -19,8 +19,18 @@ public class MulIntNode extends BinaryIntNode<IntNode>
     }
 
     @Override
+    public boolean isCommutative()
+    {
+        return true;
+    }
+
+    @Override
     public ConstantIntNode replaceWithConstant()
     {
         return newConstant(_input0.constantIntValue() * _input1.constantIntValue());
     }
+
+    // TODO: simplification
+    // x * 0 => 0
+    // x * 1 => x
 }

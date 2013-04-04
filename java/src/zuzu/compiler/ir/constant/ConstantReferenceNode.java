@@ -13,6 +13,26 @@ public class ConstantReferenceNode extends ReferenceNode
         _value = value;
     }
 
+    /*----------------
+     * Object methods
+     */
+
+    @Override
+    public boolean equals(Object node)
+    {
+        return (node instanceof ConstantReferenceNode) && _value.equals(((Node) node).constantValue());
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return _value == null ? 0 : _value.hashCode();
+    }
+
+    /*--------------
+     * Node methods
+     */
+
     @Override
     public Object constantValue()
     {

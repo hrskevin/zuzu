@@ -23,4 +23,9 @@ public class RemIntNode extends BinaryIntNode<IntNode>
     {
         return newConstant(_input0.constantIntValue() % _input1.constantIntValue());
     }
+
+    // TODO: simplification
+    // x % x => 1
+    // x % 1 => 0
+    // 1 % x => 0
 }

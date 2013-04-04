@@ -20,8 +20,19 @@ public class OrIntNode extends BinaryIntNode<IntNode>
     }
 
     @Override
+    public boolean isCommutative()
+    {
+        return true;
+    }
+
+    @Override
     public ConstantIntNode replaceWithConstant()
     {
         return newConstant(_input0.constantIntValue() | _input1.constantIntValue());
     }
+
+    // TODO: simplification
+    // x or false => x
+    // false or x => x
+    // true or x => true
 }

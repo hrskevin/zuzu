@@ -19,8 +19,20 @@ public class AddIntNode extends BinaryIntNode<IntNode>
     }
 
     @Override
+    public boolean isCommutative()
+    {
+        return true;
+    }
+
+    @Override
     public ConstantIntNode replaceWithConstant()
     {
         return newConstant(_input0.constantIntValue() + _input1.constantIntValue());
     }
+
+    // TODO: simplifications:
+    // x + 0 => x
+    // x + -x => 0
+    // x + x => 2 * x
+    // x + x*n => (n+1) * x
 }

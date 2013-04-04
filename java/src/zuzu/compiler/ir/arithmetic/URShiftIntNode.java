@@ -26,4 +26,9 @@ public class URShiftIntNode extends BinaryIntNode<IntNode>
     {
         return newConstant(_input0.constantIntValue() >>> _input1.constantIntValue());
     }
+
+    // TODO: simplification
+    // x >>> 0 => x
+    // x >>> n(>=32) => 0
+    // 0 >>> x => 0
 }

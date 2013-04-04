@@ -13,6 +13,26 @@ public final class ConstantIntNode extends IntNode
         _value = value;
     }
 
+    /*----------------
+     * Object methods
+     */
+
+    @Override
+    public boolean equals(Object node)
+    {
+        return (node instanceof ConstantIntNode) && _value == ((ConstantIntNode) node)._value;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return _value;
+    }
+
+    /*--------------
+     * Node methods
+     */
+
     @Override
     public int constantIntValue()
     {

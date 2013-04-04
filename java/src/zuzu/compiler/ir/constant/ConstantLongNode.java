@@ -13,6 +13,26 @@ public final class ConstantLongNode extends LongNode
         _value = value;
     }
 
+    /*----------------
+     * Object methods
+     */
+
+    @Override
+    public boolean equals(Object node)
+    {
+        return (node instanceof ConstantLongNode) && _value == ((ConstantLongNode) node)._value;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return (int) (_value ^ (_value >>> 32));
+    }
+
+    /*--------------
+     * Node methods
+     */
+
     @Override
     public long constantLongValue()
     {

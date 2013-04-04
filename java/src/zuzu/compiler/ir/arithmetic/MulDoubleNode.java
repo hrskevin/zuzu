@@ -5,10 +5,9 @@ import zuzu.compiler.ir.constant.ConstantDoubleNode;
 import zuzu.compiler.ir.node.BinaryDoubleNode;
 import zuzu.compiler.ir.node.DoubleNode;
 
-public final class AddDoubleNode extends BinaryDoubleNode<DoubleNode>
+public final class MulDoubleNode extends BinaryDoubleNode<DoubleNode>
 {
-
-    public AddDoubleNode(DoubleNode input0, DoubleNode input1)
+    public MulDoubleNode(DoubleNode input0, DoubleNode input1)
     {
         super(input0, input1);
     }
@@ -16,7 +15,7 @@ public final class AddDoubleNode extends BinaryDoubleNode<DoubleNode>
     @Override
     public void interpret(InterpreterState state)
     {
-        state.pushDouble(state.popDouble() + state.popDouble());
+        state.pushDouble(state.popDouble() * state.popDouble());
     }
 
     @Override
@@ -28,9 +27,6 @@ public final class AddDoubleNode extends BinaryDoubleNode<DoubleNode>
     @Override
     public ConstantDoubleNode replaceWithConstant()
     {
-        return newConstant(_input0.constantDoubleValue() + _input1.constantDoubleValue());
+        return newConstant(_input0.constantDoubleValue() * _input1.constantDoubleValue());
     }
-
-    // TODO: simplification
-    // NaN + x => NaN
 }

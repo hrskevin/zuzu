@@ -24,5 +24,4 @@ public final class NotIntNode extends UnaryIntNode<IntNode>
     {
         return newConstant(~_input.constantIntValue());
     }
-
 }

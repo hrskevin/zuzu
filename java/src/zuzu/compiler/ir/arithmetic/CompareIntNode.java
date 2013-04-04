@@ -23,4 +23,7 @@ public class CompareIntNode extends BinaryIntNode<IntNode>
     {
         return newConstant(Integer.compare(_input0.constantIntValue(), _input1.constantIntValue()));
     }
+
+    // TODO: simplification
+    // compare(x,x) => 0
 }

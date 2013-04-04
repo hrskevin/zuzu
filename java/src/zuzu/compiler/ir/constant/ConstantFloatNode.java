@@ -13,6 +13,27 @@ public class ConstantFloatNode extends FloatNode
         _value = value;
     }
 
+    /*----------------
+     * Object methods
+     */
+
+    @Override
+    public boolean equals(Object node)
+    {
+        return (node instanceof ConstantFloatNode) &&
+            Float.floatToIntBits(_value) == Float.floatToIntBits(((ConstantFloatNode) node)._value);
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return Float.floatToIntBits(_value);
+    }
+
+    /*--------------
+     * Node methods
+     */
+
     @Override
     public float constantFloatValue()
     {

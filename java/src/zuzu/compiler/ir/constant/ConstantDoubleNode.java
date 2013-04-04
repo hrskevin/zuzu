@@ -13,6 +13,28 @@ public class ConstantDoubleNode extends DoubleNode
         _value = value;
     }
 
+    /*----------------
+     * Object methods
+     */
+
+    @Override
+    public boolean equals(Object node)
+    {
+        return (node instanceof ConstantDoubleNode) &&
+            Double.doubleToLongBits(_value) == Double.doubleToLongBits(((ConstantDoubleNode) node)._value);
+    }
+    
+    @Override
+    public int hashCode()
+    {
+        long v = Double.doubleToLongBits(_value);
+        return (int) (v ^ (v >>> 32));
+    }
+
+    /*--------------
+     * Node methods
+     */
+
     @Override
     public double constantDoubleValue()
     {

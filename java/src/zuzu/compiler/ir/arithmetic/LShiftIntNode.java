@@ -24,4 +24,8 @@ public class LShiftIntNode extends BinaryIntNode<IntNode>
         return newConstant(_input0.constantIntValue() << _input1.constantIntValue());
     }
 
+    // TODO: simplification
+    // 0 << x => 0
+    // x << n (>=32) => 0
+    // x << 0 => x
 }
