@@ -1,6 +1,7 @@
 package zuzu.lang.type;
 
 import zuzu.lang.annotation.NotNull;
+import zuzu.lang.annotation.Nullable;
 
 public abstract class AbstractType implements Type
 {
@@ -27,6 +28,13 @@ public abstract class AbstractType implements Type
     @Override public @NotNull Type getBoxedType()
     {
         return this;
+    }
+
+    @Override
+    public @Nullable
+    BuiltinType getBuiltinType()
+    {
+        return null;
     }
 
     @Override public int getImmediateSize()
@@ -144,6 +152,12 @@ public abstract class AbstractType implements Type
     @Override public boolean isSubtypeOf(@NotNull Type that)
     {
         return equals(that) || that.isAny();
+    }
+
+    @Override
+    public boolean isSubrepOf(@NotNull Type that)
+    {
+        return equals(that);
     }
 
     @Override public boolean isUnsigned()

@@ -1,7 +1,7 @@
 package zuzu.compiler.ir.node;
 
 import zuzu.compiler.ir.Node;
-import zuzu.compiler.ir.Node.Type;
+import zuzu.compiler.ir.Node.NodeType;
 import zuzu.compiler.ir.constant.ConstantIntNode;
 
 public abstract class IntNode extends Node
@@ -12,9 +12,9 @@ public abstract class IntNode extends Node
     }
 
     @Override
-    public final Type type()
+    public final NodeType type()
     {
-        return Type.INT;
+        return NodeType.INT;
     }
 
     protected ConstantIntNode newConstant(int value)

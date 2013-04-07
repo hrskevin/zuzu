@@ -1,6 +1,7 @@
 package zuzu.lang.type;
 
 import zuzu.lang.annotation.NotNull;
+import zuzu.lang.annotation.Nullable;
 
 public interface Type extends TypeReference
 {
@@ -11,6 +12,9 @@ public interface Type extends TypeReference
      * type.
      */
     @NotNull Type getBoxedType();
+
+    @Nullable
+    BuiltinType getBuiltinType();
 
     Class<?> getJavaClass();
 
@@ -65,6 +69,8 @@ public interface Type extends TypeReference
     boolean isRuntimeType();
 
     boolean isSubtypeOf(@NotNull Type that);
+
+    boolean isSubrepOf(@NotNull Type that);
 
     boolean isUnsigned();
 

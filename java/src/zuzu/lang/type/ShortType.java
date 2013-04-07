@@ -10,6 +10,13 @@ public final class ShortType extends AbstractType
     {
     }
 
+    @Override
+    public @NotNull
+    BuiltinType getBuiltinType()
+    {
+        return BuiltinType.SHORT;
+    }
+
     @Override public int getImmediateSize()
     {
         return 16;

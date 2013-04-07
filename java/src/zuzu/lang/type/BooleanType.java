@@ -10,6 +10,13 @@ public final class BooleanType extends AbstractType
     {
     }
 
+    @Override
+    public @NotNull
+    BuiltinType getBuiltinType()
+    {
+        return BuiltinType.BOOL;
+    }
+
     @Override public int getImmediateSize()
     {
         return 1;

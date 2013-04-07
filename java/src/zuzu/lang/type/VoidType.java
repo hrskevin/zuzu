@@ -10,6 +10,13 @@ public class VoidType extends AbstractType
     {
     }
 
+    @Override
+    public @NotNull
+    BuiltinType getBuiltinType()
+    {
+        return BuiltinType.VOID;
+    }
+
     @Override public final int getImmediateSize()
     {
         return 0;

@@ -10,6 +10,13 @@ public final class ByteType extends AbstractType
     {
     }
 
+    @Override
+    public @NotNull
+    BuiltinType getBuiltinType()
+    {
+        return BuiltinType.BYTE;
+    }
+
     @Override public int getImmediateSize()
     {
         return 8;
@@ -38,5 +45,12 @@ public final class ByteType extends AbstractType
     @Override public boolean isNumeric()
     {
         return true;
+    }
+
+    @Override
+    public boolean isSubrepOf(@NotNull Type that)
+    {
+        int thatSize = that.getImmediateSize();
+        return that.isInteger() && thatSize <= 32 & thatSize >= 8;
     }
 }

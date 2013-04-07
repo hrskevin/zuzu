@@ -10,6 +10,13 @@ public final class CharType extends AbstractType
     {
     }
 
+    @Override
+    public @NotNull
+    BuiltinType getBuiltinType()
+    {
+        return BuiltinType.CHAR;
+    }
+
     @Override public int getImmediateSize()
     {
         return 16;
@@ -43,6 +50,12 @@ public final class CharType extends AbstractType
     @Override public boolean isNumeric()
     {
         return true;
+    }
+
+    @Override
+    public boolean isSubrepOf(@NotNull Type that)
+    {
+        return that == this || that == IntegerType.INSTANCE;
     }
 
     @Override public boolean isUnsigned()

@@ -15,7 +15,7 @@ public class InterpreterStack
     private long[] _longStack = new long[4];
     private int _longStackTop = 0;
     private final Deque<Object> _referenceStack = new ArrayDeque<Object>();
-    private final Deque<Node.Type> _stack = new ArrayDeque<Node.Type>();
+    private final Deque<Node.NodeType> _stack = new ArrayDeque<Node.NodeType>();
 
     public InterpreterStack()
     {
@@ -23,7 +23,7 @@ public class InterpreterStack
 
     public Object pop()
     {
-        switch (_stack.pop())
+        switch (_stack.peek())
         {
         case DOUBLE:
             return new Double(popDouble());
@@ -67,14 +67,14 @@ public class InterpreterStack
 
     public double popDouble()
     {
-        Node.Type type = _stack.pop();
-        assert (type == Node.Type.DOUBLE);
+        Node.NodeType type = _stack.pop();
+        assert (type == Node.NodeType.DOUBLE);
         return _doubleStack[--_doubleStackTop];
     }
 
     public void pushDouble(double value)
     {
-        _stack.push(Node.Type.DOUBLE);
+        _stack.push(Node.NodeType.DOUBLE);
         if (_doubleStackTop == _doubleStack.length)
         {
             _doubleStack = Arrays.copyOf(_doubleStack, _doubleStack.length * 2);
@@ -84,14 +84,14 @@ public class InterpreterStack
 
     public float popFloat()
     {
-        Node.Type type = _stack.pop();
-        assert (type == Node.Type.FLOAT);
+        Node.NodeType type = _stack.pop();
+        assert (type == Node.NodeType.FLOAT);
         return _floatStack[--_floatStackTop];
     }
 
     public void pushFloat(float value)
     {
-        _stack.push(Node.Type.FLOAT);
+        _stack.push(Node.NodeType.FLOAT);
         if (_floatStackTop == _floatStack.length)
         {
             _floatStack = Arrays.copyOf(_floatStack, _floatStack.length * 2);
@@ -101,14 +101,14 @@ public class InterpreterStack
 
     public int popInt()
     {
-        Node.Type type = _stack.pop();
-        assert (type == Node.Type.INT);
+        Node.NodeType type = _stack.pop();
+        assert (type == Node.NodeType.INT);
         return _intStack[--_intStackTop];
     }
 
     public void pushInt(int value)
     {
-        _stack.push(Node.Type.INT);
+        _stack.push(Node.NodeType.INT);
         if (_intStackTop == _intStack.length)
         {
             _intStack = Arrays.copyOf(_intStack, _intStack.length * 2);
@@ -118,14 +118,14 @@ public class InterpreterStack
 
     public long popLong()
     {
-        Node.Type type = _stack.pop();
-        assert (type == Node.Type.LONG);
+        Node.NodeType type = _stack.pop();
+        assert (type == Node.NodeType.LONG);
         return _longStack[--_longStackTop];
     }
 
     public void pushLong(long value)
     {
-        _stack.push(Node.Type.LONG);
+        _stack.push(Node.NodeType.LONG);
         if (_longStackTop == _longStack.length)
         {
             _longStack = Arrays.copyOf(_longStack, _longStack.length * 2);
@@ -135,14 +135,14 @@ public class InterpreterStack
 
     public Object popReference()
     {
-        Node.Type type = _stack.pop();
-        assert (type == Node.Type.REFERENCE);
+        Node.NodeType type = _stack.pop();
+        assert (type == Node.NodeType.REFERENCE);
         return _referenceStack.pop();
     }
 
     public void pushReference(Object value)
     {
-        _stack.push(Node.Type.REFERENCE);
+        _stack.push(Node.NodeType.REFERENCE);
         _referenceStack.push(value);
     }
 }

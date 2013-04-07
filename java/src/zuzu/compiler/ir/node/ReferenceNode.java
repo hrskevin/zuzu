@@ -1,15 +1,15 @@
 package zuzu.compiler.ir.node;
 
 import zuzu.compiler.ir.Node;
-import zuzu.compiler.ir.Node.Type;
+import zuzu.compiler.ir.Node.NodeType;
 import zuzu.compiler.ir.constant.ConstantReferenceNode;
 
 public abstract class ReferenceNode extends Node
 {
     @Override
-    public final Type type()
+    public final NodeType type()
     {
-        return Type.REFERENCE;
+        return NodeType.REFERENCE;
     }
 
     ConstantReferenceNode makeConstant(Object value)

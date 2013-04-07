@@ -1,14 +1,14 @@
 package zuzu.compiler.ir.node;
 
 import zuzu.compiler.ir.Node;
-import zuzu.compiler.ir.Node.Type;
+import zuzu.compiler.ir.Node.NodeType;
 
 public abstract class VoidNode extends Node
 {
     @Override
-    public final Type type()
+    public final NodeType type()
     {
-        return Type.VOID;
+        return NodeType.VOID;
     }
 
     @Override

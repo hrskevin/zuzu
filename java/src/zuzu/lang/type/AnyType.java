@@ -10,6 +10,13 @@ public final class AnyType extends AbstractType
     {
     }
 
+    @Override
+    public @NotNull
+    BuiltinType getBuiltinType()
+    {
+        return BuiltinType.ANY;
+    }
+
     @Override public @NotNull String getName()
     {
         return "any";

@@ -1,7 +1,7 @@
 package zuzu.compiler.ir.node;
 
 import zuzu.compiler.ir.Node;
-import zuzu.compiler.ir.Node.Type;
+import zuzu.compiler.ir.Node.NodeType;
 import zuzu.compiler.ir.constant.ConstantFloatNode;
 
 public abstract class FloatNode extends Node
@@ -12,9 +12,9 @@ public abstract class FloatNode extends Node
     }
 
     @Override
-    public final Type type()
+    public final NodeType type()
     {
-        return Type.FLOAT;
+        return NodeType.FLOAT;
     }
 
     protected ConstantFloatNode newConstant(float f)

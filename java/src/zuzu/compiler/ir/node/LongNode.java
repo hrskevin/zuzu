@@ -1,7 +1,7 @@
 package zuzu.compiler.ir.node;
 
 import zuzu.compiler.ir.Node;
-import zuzu.compiler.ir.Node.Type;
+import zuzu.compiler.ir.Node.NodeType;
 import zuzu.compiler.ir.constant.ConstantLongNode;
 
 public abstract class LongNode extends Node
@@ -12,9 +12,9 @@ public abstract class LongNode extends Node
     }
 
     @Override
-    public final Type type()
+    public final NodeType type()
     {
-        return Type.LONG;
+        return NodeType.LONG;
     }
 
     protected ConstantLongNode newConstant(long l)

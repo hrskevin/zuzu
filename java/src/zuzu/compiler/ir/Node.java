@@ -1,5 +1,8 @@
 package zuzu.compiler.ir;
 
+import zuzu.lang.type.Type;
+import zuzu.lang.type.TypeReference;
+
 public abstract class Node
 {
     /**
@@ -7,7 +10,7 @@ public abstract class Node
      */
     private Node _next;
 
-    public static enum Type
+    public static enum NodeType
     {
         INT,
         LONG,
@@ -15,6 +18,31 @@ public abstract class Node
         DOUBLE,
         REFERENCE,
         VOID;
+
+        public static NodeType fromType(Type type)
+        {
+            if (type.isReferenceType())
+            {
+                return REFERENCE;
+            }
+            else if (type.isVoid())
+            {
+                return VOID;
+            }
+            else if (type.isFloating())
+            {
+                return type.getImmediateSize() == 32 ? FLOAT : DOUBLE;
+            }
+            else
+            {
+                return type.getImmediateSize() == 64 ? LONG : INT;
+            }
+        }
+
+        public static NodeType fromType(TypeReference ref)
+        {
+            return fromType(ref.getType());
+        }
     }
 
     /*----------------
@@ -130,7 +158,7 @@ public abstract class Node
 
     public abstract int nInputs();
 
-    public abstract Type type();
+    public abstract NodeType type();
 
     public abstract Node replaceWithConstant();
 
@@ -144,10 +172,11 @@ public abstract class Node
      * Linked list operations
      */
 
-    public void insertAfter(Node before)
+    public Node insertAfter(Node before)
     {
         _next = before._next;
         before._next = this;
+        return this;
     }
 
     public Node insertBefore(Node head)

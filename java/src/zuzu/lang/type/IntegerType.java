@@ -10,6 +10,13 @@ public class IntegerType extends AbstractType
     {
     }
 
+    @Override
+    public @NotNull
+    BuiltinType getBuiltinType()
+    {
+        return BuiltinType.INT;
+    }
+
     @Override public int getImmediateSize()
     {
         return 32;

@@ -10,6 +10,13 @@ public class NullType extends AbstractType
     {
     }
 
+    @Override
+    public @NotNull
+    BuiltinType getBuiltinType()
+    {
+        return BuiltinType.NULL;
+    }
+
     @Override public @NotNull String getName()
     {
         return "Null";

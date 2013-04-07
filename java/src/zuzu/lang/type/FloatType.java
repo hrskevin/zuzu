@@ -10,6 +10,13 @@ public final class FloatType extends AbstractType
     {
     }
 
+    @Override
+    public @NotNull
+    BuiltinType getBuiltinType()
+    {
+        return BuiltinType.FLOAT;
+    }
+
     @Override public int getImmediateSize()
     {
         return 32;

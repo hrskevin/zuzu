@@ -7,31 +7,19 @@ import java.io.LineNumberReader;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 
+import zuzu.compiler.ir.CompilationState;
+import zuzu.compiler.ir.InterpreterState;
 import zuzu.compiler.parser.ZuzuLexer;
 import zuzu.compiler.parser.ZuzuParser;
-import zuzu.compiler.parser.ZuzuParser.StmtContext;
 
 public class ZuzuInterpreter
 {
-    private final ZuzuInterpreterVisitor _visitor;
-
-    public ZuzuInterpreter()
-    {
-        _visitor = new ZuzuInterpreterVisitor();
-    }
-
-    public Object interpretStmt(StmtContext ctxt)
-    {
-        return ctxt.accept(_visitor).node();
-    }
-
     public static void main(String[] args)
     {
         String prompt = "zuzu> ";
         LineNumberReader reader = new LineNumberReader(new InputStreamReader(System.in));
         ZuzuLexer lexer = new ZuzuLexer(null);
         ZuzuParser parser = new ZuzuParser(null);
-        ZuzuInterpreter interpreter = new ZuzuInterpreter();
         
         try
         {
@@ -60,8 +48,14 @@ public class ZuzuInterpreter
                 try
                 {
                     ZuzuParser.StmtContext stmt = parser.stmt();
-                    Object result = interpreter.interpretStmt(stmt);
-                    System.out.format("%s\n", result);
+                    CompilationState state = new CompilationState();
+                    ZuzuFunctionCompiler compiler = new ZuzuFunctionCompiler(state);
+                    stmt.accept(compiler);
+                    InterpreterState interpreterState = new InterpreterState();
+                    state.interpret(interpreterState);
+                    // FIXME: Don't pop raw node value. Instead wrap it with an Any with the
+                    // appropriate type.
+                    System.out.format("%s\n", interpreterState.pop());
                 }
                 catch (Exception ex)
                 {

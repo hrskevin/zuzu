@@ -10,6 +10,13 @@ public class NeverType extends VoidType
     {
     }
 
+    @Override
+    public @NotNull
+    BuiltinType getBuiltinType()
+    {
+        return BuiltinType.NEVER;
+    }
+
     @Override public @NotNull String getName()
     {
         return "never";

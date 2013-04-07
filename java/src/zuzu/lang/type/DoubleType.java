@@ -10,6 +10,13 @@ public final class DoubleType extends AbstractType
     {
     }
 
+    @Override
+    public @NotNull
+    BuiltinType getBuiltinType()
+    {
+        return BuiltinType.DOUBLE;
+    }
+
     @Override public int getImmediateSize()
     {
         return 16;

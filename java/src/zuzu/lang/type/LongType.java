@@ -10,6 +10,13 @@ public final class LongType extends AbstractType
     {
     }
 
+    @Override
+    public @NotNull
+    BuiltinType getBuiltinType()
+    {
+        return BuiltinType.LONG;
+    }
+
     @Override public int getImmediateSize()
     {
         return 64;
