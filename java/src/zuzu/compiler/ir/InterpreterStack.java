@@ -1,29 +1,55 @@
 package zuzu.compiler.ir;
 
+import gnu.trove.stack.array.TIntArrayStack;
+
 import java.util.ArrayDeque;
-import java.util.Arrays;
 import java.util.Deque;
+import java.util.LinkedList;
+
+import zuzu.lang.type.BuiltinType;
+import zuzu.lang.type.Type;
 
 public class InterpreterStack
 {
-    private double[] _doubleStack = new double[4];
-    private int _doubleStackTop = 0;
-    private float[] _floatStack = new float[4];
-    private int _floatStackTop = 0;
-    private int[] _intStack = new int[4];
-    private int _intStackTop = 0;
-    private long[] _longStack = new long[4];
-    private int _longStackTop = 0;
-    private final Deque<Object> _referenceStack = new ArrayDeque<Object>();
-    private final Deque<Node.NodeType> _stack = new ArrayDeque<Node.NodeType>();
+    private final TIntArrayStack _stack;
+    private final Deque<Object> _referenceStack;
+    private final Deque<Node.NodeType> _typeStack;
+
+    public InterpreterStack(int initialCapacity)
+    {
+        _stack = new TIntArrayStack(initialCapacity);
+        _referenceStack = new LinkedList<Object>();
+        _typeStack = new ArrayDeque<Node.NodeType>(initialCapacity);
+    }
 
     public InterpreterStack()
     {
+        this(4);
+    }
+
+    public Object pop(Type type)
+    {
+        BuiltinType builtinType = type.getBuiltinType();
+        if (builtinType != null)
+        {
+            switch (builtinType)
+            {
+            case BOOL:
+                return new Boolean(popInt() != 0);
+            case BYTE:
+                return new Byte((byte) popInt());
+            case CHAR:
+                return new Character((char) popInt());
+            case SHORT:
+                return new Short((short) popInt());
+            }
+        }
+        return pop();
     }
 
     public Object pop()
     {
-        switch (_stack.peek())
+        switch (_typeStack.peek())
         {
         case DOUBLE:
             return new Double(popDouble());
@@ -67,82 +93,72 @@ public class InterpreterStack
 
     public double popDouble()
     {
-        Node.NodeType type = _stack.pop();
+        Node.NodeType type = _typeStack.pop();
         assert (type == Node.NodeType.DOUBLE);
-        return _doubleStack[--_doubleStackTop];
+        return Double.longBitsToDouble(((long) _stack.pop() << 32) + _stack.pop());
     }
 
     public void pushDouble(double value)
     {
-        _stack.push(Node.NodeType.DOUBLE);
-        if (_doubleStackTop == _doubleStack.length)
-        {
-            _doubleStack = Arrays.copyOf(_doubleStack, _doubleStack.length * 2);
-        }
-        _doubleStack[_doubleStackTop++] = value;
+        _typeStack.push(Node.NodeType.DOUBLE);
+        long rawBits = Double.doubleToRawLongBits(value);
+        _stack.push((int) rawBits);
+        _stack.push((int) (rawBits >> 32));
     }
 
     public float popFloat()
     {
-        Node.NodeType type = _stack.pop();
+        Node.NodeType type = _typeStack.pop();
         assert (type == Node.NodeType.FLOAT);
-        return _floatStack[--_floatStackTop];
+        return Float.intBitsToFloat(_stack.pop());
     }
 
     public void pushFloat(float value)
     {
-        _stack.push(Node.NodeType.FLOAT);
-        if (_floatStackTop == _floatStack.length)
-        {
-            _floatStack = Arrays.copyOf(_floatStack, _floatStack.length * 2);
-        }
-        _floatStack[_floatStackTop++] = value;
+        _typeStack.push(Node.NodeType.FLOAT);
+        _stack.push(Float.floatToRawIntBits(value));
     }
 
     public int popInt()
     {
-        Node.NodeType type = _stack.pop();
+        Node.NodeType type = _typeStack.pop();
         assert (type == Node.NodeType.INT);
-        return _intStack[--_intStackTop];
+        return _stack.pop();
     }
 
     public void pushInt(int value)
     {
-        _stack.push(Node.NodeType.INT);
-        if (_intStackTop == _intStack.length)
-        {
-            _intStack = Arrays.copyOf(_intStack, _intStack.length * 2);
-        }
-        _intStack[_intStackTop++] = value;
+        _typeStack.push(Node.NodeType.INT);
+        _stack.push(value);
     }
 
     public long popLong()
     {
-        Node.NodeType type = _stack.pop();
+        Node.NodeType type = _typeStack.pop();
         assert (type == Node.NodeType.LONG);
-        return _longStack[--_longStackTop];
+        return ((long) _stack.pop() << 32) + _stack.pop();
     }
 
     public void pushLong(long value)
     {
-        _stack.push(Node.NodeType.LONG);
-        if (_longStackTop == _longStack.length)
-        {
-            _longStack = Arrays.copyOf(_longStack, _longStack.length * 2);
-        }
-        _longStack[_longStackTop++] = value;
+        _typeStack.push(Node.NodeType.LONG);
+        _stack.push((int) value);
+        _stack.push((int) (value >> 32));
     }
 
     public Object popReference()
     {
-        Node.NodeType type = _stack.pop();
+        Node.NodeType type = _typeStack.pop();
         assert (type == Node.NodeType.REFERENCE);
+        int i = _stack.pop();
+        assert (i + 1 == _referenceStack.size());
         return _referenceStack.pop();
     }
 
     public void pushReference(Object value)
     {
-        _stack.push(Node.NodeType.REFERENCE);
+        _typeStack.push(Node.NodeType.REFERENCE);
+        _stack.push(_referenceStack.size());
         _referenceStack.push(value);
     }
 }

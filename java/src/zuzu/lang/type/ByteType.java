@@ -2,7 +2,7 @@ package zuzu.lang.type;
 
 import zuzu.lang.annotation.NotNull;
 
-public final class ByteType extends AbstractType
+public final class ByteType extends IntegralType
 {
     public static final @NotNull ByteType INSTANCE = new ByteType();
 
@@ -17,7 +17,7 @@ public final class ByteType extends AbstractType
         return BuiltinType.BYTE;
     }
 
-    @Override public int getImmediateSize()
+    @Override public int getValueBits()
     {
         return 8;
     }
@@ -27,30 +27,15 @@ public final class ByteType extends AbstractType
         return Byte.TYPE;
     }
 
+    @Override
+    public int getPrecision()
+    {
+        return 8;
+    }
+
     @Override public @NotNull String getName()
     {
         return "byte";
     }
 
-    @Override public boolean isInteger()
-    {
-        return true;
-    }
-
-    @Override public boolean isPrimitive()
-    {
-        return true;
-    }
-
-    @Override public boolean isNumeric()
-    {
-        return true;
-    }
-
-    @Override
-    public boolean isSubrepOf(@NotNull Type that)
-    {
-        int thatSize = that.getImmediateSize();
-        return that.isInteger() && thatSize <= 32 & thatSize >= 8;
-    }
 }

@@ -2,7 +2,7 @@ package zuzu.lang.type;
 
 import zuzu.lang.annotation.NotNull;
 
-public final class ShortType extends AbstractType
+public final class ShortType extends IntegralType
 {
     public static final @NotNull ShortType INSTANCE = new ShortType();
 
@@ -17,7 +17,7 @@ public final class ShortType extends AbstractType
         return BuiltinType.SHORT;
     }
 
-    @Override public int getImmediateSize()
+    @Override public int getValueBits()
     {
         return 16;
     }
@@ -32,19 +32,10 @@ public final class ShortType extends AbstractType
         return "short";
     }
 
-    @Override public boolean isInteger()
+    @Override
+    public int getPrecision()
     {
-        return true;
-    }
-
-    @Override public boolean isPrimitive()
-    {
-        return true;
-    }
-
-    @Override public boolean isNumeric()
-    {
-        return true;
+        return 16;
     }
 
 }

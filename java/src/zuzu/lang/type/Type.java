@@ -7,6 +7,8 @@ public interface Type extends TypeReference
 {
     boolean equals(Type that);
 
+    int getArity();
+
     /**
      * If this {@link #isBoxed()}, returns the unboxed version of the type, otherwise returns this
      * type.
@@ -30,7 +32,9 @@ public interface Type extends TypeReference
 
     @NotNull Type getNullVariant();
 
-    int getImmediateSize();
+    int getPrecision();
+
+    int getValueBits();
 
     boolean hasParameters();
 
@@ -48,13 +52,19 @@ public interface Type extends TypeReference
 
     boolean isEnum();
 
+    boolean isExplicitlyCastableTo(@NotNull Type that);
+
     boolean isFloating();
 
     boolean isFunction();
 
+    boolean isImplicitlyCastableTo(@NotNull Type that);
+
     boolean isInteger();
 
     boolean isInterface();
+
+    boolean isInvalid();
 
     boolean isNever();
 

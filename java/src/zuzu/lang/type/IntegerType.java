@@ -2,7 +2,7 @@ package zuzu.lang.type;
 
 import zuzu.lang.annotation.NotNull;
 
-public class IntegerType extends AbstractType
+public class IntegerType extends IntegralType
 {
     public static final @NotNull IntegerType INSTANCE = new IntegerType();
 
@@ -17,7 +17,7 @@ public class IntegerType extends AbstractType
         return BuiltinType.INT;
     }
 
-    @Override public int getImmediateSize()
+    @Override public int getValueBits()
     {
         return 32;
     }
@@ -32,18 +32,10 @@ public class IntegerType extends AbstractType
         return "int";
     }
 
-    @Override public boolean isInteger()
+    @Override
+    public int getPrecision()
     {
-        return true;
+        return 32;
     }
 
-    @Override public boolean isPrimitive()
-    {
-        return true;
-    }
-
-    @Override public boolean isNumeric()
-    {
-        return true;
-    }
 }

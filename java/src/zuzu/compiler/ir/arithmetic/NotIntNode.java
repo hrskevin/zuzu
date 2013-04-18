@@ -16,7 +16,7 @@ public final class NotIntNode extends UnaryIntNode<IntNode>
     @Override
     public void interpret(InterpreterState state)
     {
-        state.pushInt(~state.popInt());
+        state.pushInt(1 ^ state.popInt());
     }
 
     @Override

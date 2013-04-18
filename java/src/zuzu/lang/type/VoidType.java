@@ -17,7 +17,7 @@ public class VoidType extends AbstractType
         return BuiltinType.VOID;
     }
 
-    @Override public final int getImmediateSize()
+    @Override public final int getValueBits()
     {
         return 0;
     }

@@ -1,5 +1,11 @@
 package zuzu.compiler.ir;
 
+import zuzu.compiler.ir.node.DoubleNode;
+import zuzu.compiler.ir.node.FloatNode;
+import zuzu.compiler.ir.node.IntNode;
+import zuzu.compiler.ir.node.LongNode;
+import zuzu.compiler.ir.node.ReferenceNode;
+import zuzu.compiler.ir.node.TypeInferenceNode;
 import zuzu.lang.type.Type;
 import zuzu.lang.type.TypeReference;
 
@@ -11,7 +17,6 @@ public class Operand
 
     private final Type _type;
 
-    // TODO: replace with Node type
     private final Node _node;
 
     /*---------------
@@ -22,6 +27,12 @@ public class Operand
     {
         _type = type.getType();
         _node = node;
+    }
+
+    public Operand(TypeReference type)
+    {
+        _type = type.getType();
+        _node = TypeInferenceNode.INSTANCE;
     }
 
     /*-----------------
@@ -36,6 +47,31 @@ public class Operand
     public final Node node()
     {
         return _node;
+    }
+
+    public final IntNode intNode()
+    {
+        return (IntNode) _node;
+    }
+
+    public final LongNode longNode()
+    {
+        return (LongNode) _node;
+    }
+
+    public final FloatNode floatNode()
+    {
+        return (FloatNode) _node;
+    }
+
+    public final DoubleNode doubleNode()
+    {
+        return (DoubleNode) _node;
+    }
+
+    public final ReferenceNode refNode()
+    {
+        return (ReferenceNode) _node;
     }
 
     public boolean isConstant()

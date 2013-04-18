@@ -25,6 +25,13 @@ public abstract class AbstractType implements Type
         return this == that;
     }
 
+    @Override
+    public int getArity()
+    {
+        // Eventualy we may support tuple types with higher arity.
+        return isVoid() ? 0 : 1;
+    }
+
     @Override public @NotNull Type getBoxedType()
     {
         return this;
@@ -37,9 +44,9 @@ public abstract class AbstractType implements Type
         return null;
     }
 
-    @Override public int getImmediateSize()
+    @Override public int getValueBits()
     {
-        return 32;
+        return 0;
     }
 
     @Override public abstract @NotNull String getName();
@@ -57,6 +64,12 @@ public abstract class AbstractType implements Type
     @Override public @NotNull Type getNullnessVariant()
     {
         return this;
+    }
+
+    @Override
+    public int getPrecision()
+    {
+        return 0;
     }
 
     @Override public boolean hasParameters()
@@ -99,6 +112,12 @@ public abstract class AbstractType implements Type
         return false;
     }
 
+    @Override
+    public boolean isExplicitlyCastableTo(@NotNull Type that)
+    {
+        return isSubtypeOf(that);
+    }
+
     @Override public boolean isFloating()
     {
         return false;
@@ -109,12 +128,24 @@ public abstract class AbstractType implements Type
         return false;
     }
 
+    @Override
+    public boolean isImplicitlyCastableTo(@NotNull Type that)
+    {
+        return this.isSubtypeOf(that);
+    }
+
     @Override public boolean isInteger()
     {
         return false;
     }
 
     @Override public boolean isInterface()
+    {
+        return false;
+    }
+
+    @Override
+    public boolean isInvalid()
     {
         return false;
     }
@@ -141,7 +172,7 @@ public abstract class AbstractType implements Type
 
     @Override public boolean isReferenceType()
     {
-        return !isPrimitive();
+        return false;
     }
 
     @Override public boolean isRuntimeType()

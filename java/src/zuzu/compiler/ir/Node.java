@@ -31,11 +31,11 @@ public abstract class Node
             }
             else if (type.isFloating())
             {
-                return type.getImmediateSize() == 32 ? FLOAT : DOUBLE;
+                return type.getValueBits() == 32 ? FLOAT : DOUBLE;
             }
             else
             {
-                return type.getImmediateSize() == 64 ? LONG : INT;
+                return type.getValueBits() == 64 ? LONG : INT;
             }
         }
 
@@ -52,6 +52,11 @@ public abstract class Node
     @Override
     public boolean equals(Object obj)
     {
+        if (isUnique())
+        {
+            return super.equals(obj);
+        }
+
         if (obj instanceof Node)
         {
             Node that = (Node) obj;
@@ -83,6 +88,11 @@ public abstract class Node
     @Override
     public int hashCode()
     {
+        if (isUnique())
+        {
+            return super.hashCode();
+        }
+
         int code = 0;
         if (isCommutative())
         {
@@ -145,6 +155,16 @@ public abstract class Node
     public boolean isConstant()
     {
         return false;
+    }
+
+    public boolean isUnique()
+    {
+        return false;
+    }
+
+    public boolean isValid()
+    {
+        return true;
     }
 
     /**

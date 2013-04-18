@@ -2,7 +2,7 @@ package zuzu.lang.type;
 
 import zuzu.lang.annotation.NotNull;
 
-public final class CharType extends AbstractType
+public final class CharType extends IntegralType
 {
     public static final @NotNull CharType INSTANCE = new CharType();
 
@@ -17,7 +17,7 @@ public final class CharType extends AbstractType
         return BuiltinType.CHAR;
     }
 
-    @Override public int getImmediateSize()
+    @Override public int getValueBits()
     {
         return 16;
     }
@@ -32,30 +32,15 @@ public final class CharType extends AbstractType
         return "char";
     }
 
+    @Override
+    public int getPrecision()
+    {
+        return 16;
+    }
+
     @Override public boolean isCharacter()
     {
         return true;
-    }
-
-    @Override public boolean isInteger()
-    {
-        return true;
-    }
-
-    @Override public boolean isPrimitive()
-    {
-        return true;
-    }
-
-    @Override public boolean isNumeric()
-    {
-        return true;
-    }
-
-    @Override
-    public boolean isSubrepOf(@NotNull Type that)
-    {
-        return that == this || that == IntegerType.INSTANCE;
     }
 
     @Override public boolean isUnsigned()

@@ -17,7 +17,7 @@ public final class BooleanType extends AbstractType
         return BuiltinType.BOOL;
     }
 
-    @Override public int getImmediateSize()
+    @Override public int getValueBits()
     {
         return 1;
     }
@@ -35,6 +35,12 @@ public final class BooleanType extends AbstractType
     @Override public boolean isBoolean()
     {
         return true;
+    }
+
+    @Override
+    public boolean isExplicitlyCastableTo(@NotNull Type that)
+    {
+        return that.isBoolean() || that.isInteger();
     }
 
     @Override public boolean isPrimitive()

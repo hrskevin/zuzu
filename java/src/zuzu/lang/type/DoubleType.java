@@ -17,7 +17,7 @@ public final class DoubleType extends AbstractType
         return BuiltinType.DOUBLE;
     }
 
-    @Override public int getImmediateSize()
+    @Override public int getValueBits()
     {
         return 16;
     }
@@ -32,9 +32,21 @@ public final class DoubleType extends AbstractType
         return "double";
     }
 
+    @Override
+    public int getPrecision()
+    {
+        return 52;
+    }
+
     @Override public boolean isFloating()
     {
         return true;
+    }
+
+    @Override
+    public boolean isExplicitlyCastableTo(@NotNull Type that)
+    {
+        return isNumeric();
     }
 
     @Override public boolean isPrimitive()

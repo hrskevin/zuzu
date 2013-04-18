@@ -2,7 +2,7 @@ package zuzu.lang.type;
 
 import zuzu.lang.annotation.NotNull;
 
-public final class FloatType extends AbstractType
+public final class FloatType extends FloatingType
 {
     public static final @NotNull FloatType INSTANCE = new FloatType();
 
@@ -17,7 +17,7 @@ public final class FloatType extends AbstractType
         return BuiltinType.FLOAT;
     }
 
-    @Override public int getImmediateSize()
+    @Override public int getValueBits()
     {
         return 32;
     }
@@ -32,18 +32,16 @@ public final class FloatType extends AbstractType
         return "float";
     }
 
-    @Override public boolean isFloating()
+    @Override
+    public int getPrecision()
     {
-        return true;
+        return 23;
     }
 
-    @Override public boolean isPrimitive()
+    @Override
+    public boolean isExplicitlyCastableTo(@NotNull Type that)
     {
-        return true;
+        return isNumeric();
     }
 
-    @Override public boolean isNumeric()
-    {
-        return true;
-    }
 }

@@ -2,7 +2,7 @@ package zuzu.lang.type;
 
 import zuzu.lang.annotation.NotNull;
 
-public final class LongType extends AbstractType
+public final class LongType extends IntegralType
 {
     public static final @NotNull LongType INSTANCE = new LongType();
 
@@ -17,7 +17,7 @@ public final class LongType extends AbstractType
         return BuiltinType.LONG;
     }
 
-    @Override public int getImmediateSize()
+    @Override public int getValueBits()
     {
         return 64;
     }
@@ -32,18 +32,10 @@ public final class LongType extends AbstractType
         return "long";
     }
 
-    @Override public boolean isInteger()
+    @Override
+    public int getPrecision()
     {
-        return true;
+        return 64;
     }
 
-    @Override public boolean isPrimitive()
-    {
-        return true;
-    }
-
-    @Override public boolean isNumeric()
-    {
-        return true;
-    }
 }

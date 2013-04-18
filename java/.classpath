@@ -17,5 +17,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre7"/>
+	<classpathentry kind="lib" path="D:/ws/zuzu/external-jars/trove4j-3.0.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

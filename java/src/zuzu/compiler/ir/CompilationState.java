@@ -1,6 +1,7 @@
 package zuzu.compiler.ir;
 
 import zuzu.compiler.ir.branch.JumpNode;
+import zuzu.lang.annotation.NotNull;
 
 
 public class CompilationState
@@ -8,6 +9,8 @@ public class CompilationState
     private final BasicBlock _entryBlock = new BasicBlock();
     private final BasicBlock _exitBlock = new BasicBlock();
     private BasicBlock _currentBlock;
+
+    private ExpectedResult _expectedResult;
 
     // private final SymbolTable _symbolTable = new SymbolTable();
 
@@ -27,6 +30,17 @@ public class CompilationState
     public BasicBlock getCurrentBlock()
     {
         return _currentBlock;
+    }
+
+    public @NotNull
+    ExpectedResult getExpectedResult()
+    {
+        return _expectedResult != null ? _expectedResult : ExpectedAnything.INSTANCE;
+    }
+
+    public void setExpectedResult(ExpectedResult result)
+    {
+        _expectedResult = result;
     }
 
     public void interpret(InterpreterState state)

@@ -9,6 +9,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 
 import zuzu.compiler.ir.CompilationState;
 import zuzu.compiler.ir.InterpreterState;
+import zuzu.compiler.ir.Operand;
 import zuzu.compiler.parser.ZuzuLexer;
 import zuzu.compiler.parser.ZuzuParser;
 
@@ -50,12 +51,15 @@ public class ZuzuInterpreter
                     ZuzuParser.StmtContext stmt = parser.stmt();
                     CompilationState state = new CompilationState();
                     ZuzuFunctionCompiler compiler = new ZuzuFunctionCompiler(state);
-                    stmt.accept(compiler);
+                    Operand operand = stmt.accept(compiler);
                     InterpreterState interpreterState = new InterpreterState();
                     state.interpret(interpreterState);
-                    // FIXME: Don't pop raw node value. Instead wrap it with an Any with the
-                    // appropriate type.
-                    System.out.format("%s\n", interpreterState.pop());
+                    if (!operand.type().isVoid())
+                    {
+                        // FIXME: Don't pop raw node value. Instead wrap it with an Any with the
+                        // appropriate type.
+                        System.out.format("%s\n", interpreterState.pop(operand.type()));
+                    }
                 }
                 catch (Exception ex)
                 {
